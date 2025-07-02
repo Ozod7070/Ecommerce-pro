@@ -4,9 +4,7 @@ import uz.pdp.base.BaseService;
 import uz.pdp.modul.Category;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CategoryService implements BaseService<Category> {
@@ -16,7 +14,7 @@ public class CategoryService implements BaseService<Category> {
     private List<Category> categories;
 
     public CategoryService() {
-        categories = readCategories();
+        this.categories = readCategories();
     }
 
     @Override
@@ -33,13 +31,13 @@ public class CategoryService implements BaseService<Category> {
 
     @Override
     public boolean update(Category category, UUID id) throws Exception {
-        boolean updated = categories.stream()
-                .filter(c -> c.isActive() && c.getId().equals(id))
-                .peek(c -> c.setName(category.getName()))
-                .findFirst()
-                .isPresent();
-        if (updated) saveCategories();
-        return updated;
+        Optional<Category> optionalCategory = findById(id);
+        if (optionalCategory.isPresent()) {
+            optionalCategory.get().setName(category.getName());
+            saveCategories();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -55,10 +53,20 @@ public class CategoryService implements BaseService<Category> {
 
     @Override
     public Category get(UUID id) throws Exception {
+        return findById(id)
+                .orElseThrow(() -> new Exception("Category with ID " + id + " not found"));
+    }
+
+    public Optional<Category> findById(UUID id) {
         return categories.stream()
                 .filter(c -> c.isActive() && c.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new Exception("Category with ID " + id + " not found"));
+                .findFirst();
+    }
+
+    public Optional<Category> getByName(String name) {
+        return categories.stream()
+                .filter(c -> c.isActive() && c.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     public List<Category> getAll() {
@@ -69,29 +77,20 @@ public class CategoryService implements BaseService<Category> {
 
     public boolean isLast(UUID categoryId) {
         return categories.stream()
-                .filter(c -> c.isActive() && c.getParentId().equals(categoryId))
-                .findAny()
-                .isEmpty();
+                .noneMatch(c -> c.isActive() && c.getParentId().equals(categoryId));
     }
 
-    public Category getByName(String name) {
+    public List<Category> getChildren(UUID parentId) {
         return categories.stream()
-                .filter(c -> c.isActive() && c.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Category> getChildren(UUID categoryId) {
-        return categories.stream()
-                .filter(c -> c.isActive() && c.getParentId().equals(categoryId))
+                .filter(c -> c.isActive() && c.getParentId().equals(parentId))
                 .collect(Collectors.toList());
     }
 
     public List<Category> getChildren(String name) {
-        UUID parentId = name.equalsIgnoreCase("Root") ? ROOT_UUID :
-                getByName(name) != null ? getByName(name).getId() : null;
-        if (parentId == null) return new ArrayList<>();
-        return getChildren(parentId);
+        UUID parentId = name.equalsIgnoreCase("Root")
+                ? ROOT_UUID
+                : getByName(name).map(Category::getId).orElse(null);
+        return parentId == null ? new ArrayList<>() : getChildren(parentId);
     }
 
     public List<Category> getLastCategories() {
@@ -102,38 +101,31 @@ public class CategoryService implements BaseService<Category> {
 
     public void killChildren(UUID categoryId) throws IOException {
         List<Category> children = getChildren(categoryId);
-        if (children.isEmpty()) return;
-
-        children.forEach(child -> {
-            child.setActive(false);
-            try {
+        if (!children.isEmpty()) {
+            for (Category child : children) {
+                child.setActive(false);
                 killChildren(child.getId());
+            }
+            saveCategories();
+        }
+    }
+
+    public void remove(UUID id) throws IOException {
+        findById(id).ifPresent(c -> {
+            c.setActive(false);
+            try {
+                killChildren(c.getId());
+                saveCategories();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-        saveCategories();
-    }
-
-    public void remove(UUID id) throws IOException {
-        categories.stream()
-                .filter(c -> c.isActive() && c.getId().equals(id))
-                .findFirst()
-                .ifPresent(c -> {
-                    c.setActive(false);
-                    try {
-                        killChildren(c.getId());
-                        saveCategories();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
     }
 
     private boolean isCategoryValid(Category category) {
         return categories.stream()
-                .noneMatch(c -> c.isActive() &&
-                        c.getName().equalsIgnoreCase(category.getName()));
+                .noneMatch(c -> c.isActive()
+                        && c.getName().equalsIgnoreCase(category.getName()));
     }
 
     private List<Category> readCategories() {
