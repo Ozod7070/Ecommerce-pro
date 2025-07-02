@@ -15,10 +15,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Cart extends BaseModel {
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Item {
-        UUID productId;
-        Integer quantity;
+        private UUID productId;
+        private Integer quantity;
     }
+
     private UUID userId;
     private List<Item> products;
 
