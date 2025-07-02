@@ -12,14 +12,6 @@ public class CartService implements BaseService<Cart> {
     private static final String FILE_NAME = "carts.json";
     private List<Cart> carts;
 
-    public CartService() {
-        try {
-            carts = readCarts();
-        } catch (IOException e) {
-            carts = new ArrayList<>();
-        }
-    }
-
     @Override
     public void add(Cart cart) throws Exception {
 
