@@ -1,14 +1,19 @@
 package uz.pdp.modul;
 
-import jdk.jfr.DataAmount;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import uz.pdp.base.BaseModel;
+
 
 import java.util.UUID;
-
-public class Product {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Product extends BaseModel {
     private String name;
     private double price;
     private int quantity;
-    private String categoryId;
-    private UUID catergoryId;
+    private UUID categoryId;
     private UUID sellerId;
 }
