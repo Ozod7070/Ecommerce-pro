@@ -1,20 +1,16 @@
 package uz.pdp.base;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.*;
-
-import java.util.Date;
 import java.util.UUID;
-@Data
+
+@Getter
 public abstract class BaseModel {
-    private final UUID id;
-    private boolean isActive;
-    private Date createdAt;
-    private Date updatedAt;
+    private UUID id;
+    @Setter
+    private boolean active = true;
 
     public BaseModel() {
         id = UUID.randomUUID();
-        isActive = true;
-        createdAt = new Date();
-        updatedAt = createdAt;
     }
 }
