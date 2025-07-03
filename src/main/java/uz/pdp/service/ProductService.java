@@ -70,7 +70,7 @@ public class ProductService implements BaseService<Product> {
     }
 
     @Override
-    public boolean remove(Product product) throws Exception {
+    public void remove(Product product) throws Exception {
         boolean removed = products.removeIf(p -> p.getId().equals(product.getId()));
         if (removed) {
             writeProducts();

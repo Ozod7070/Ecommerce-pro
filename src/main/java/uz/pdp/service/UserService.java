@@ -36,7 +36,7 @@ public class UserService implements BaseService <User> {
     }
 
     @Override
-    public void update(User user, UUID id) throws Exception {
+    public boolean update(User user, UUID id) throws Exception {
         Optional<User>exsitingUserOpt = Optional.ofNullable(get(id));
         if(exsitingUserOpt.isPresent()){
             User exsitingUser = exsitingUserOpt.get();
