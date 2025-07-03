@@ -15,8 +15,9 @@ public class UserService implements BaseService {
     }
 
     @Override
-    public void update(Object o, UUID id) throws Exception {
+    public boolean update(Object o, UUID id) throws Exception {
 
+        return false;
     }
 
     @Override
