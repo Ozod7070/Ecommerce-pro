@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 import uz.pdp.base.BaseModel;
 
 
+import java.io.Serializable;
 import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends BaseModel {
+public class Product extends BaseModel implements Serializable {
     private String name;
     private double price;
     private int quantity;

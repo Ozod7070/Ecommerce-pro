@@ -16,6 +16,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Cart extends BaseModel {
+    public Object isPaid() {
+        return null;
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

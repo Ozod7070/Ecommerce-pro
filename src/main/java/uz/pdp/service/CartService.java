@@ -47,6 +47,11 @@ public class CartService implements BaseService<Cart> {
     }
 
     @Override
+    public boolean remove(Cart cart) throws Exception {
+        return false;
+    }
+
+    @Override
     public boolean remove(UUID id) throws Exception {
         Cart found = get(id);
         if (found != null) {
@@ -67,8 +72,7 @@ public class CartService implements BaseService<Cart> {
         return null;
     }
 
-    public void checkout(Cart cart, ProductService productService) throws IOException,
-            InvalidCartItemException {
+    public void checkout(Cart cart, ProductService productService) throws Exception {
         if (isValidCart(cart, productService)) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.buyItemsInCart(productService);
