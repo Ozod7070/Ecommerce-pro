@@ -5,11 +5,15 @@ import uz.pdp.enums.UserRole;
 import uz.pdp.exceptions.InvalidUserNameException;
 import uz.pdp.modul.User;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class UserService implements BaseService <User> {
-
+    private static final String USER_FILE = "src/main/uz.pdp/data/user.txt";
     List<User> users =  new ArrayList<>();
 
 
@@ -87,6 +91,19 @@ public class UserService implements BaseService <User> {
 
     private boolean getUserAvailable(String username){
           return users.stream().noneMatch(user -> user.isActive() && user.getUserName().equals(username));
+    }
+
+    public List<User>getAll(){
+        return users.stream().filter(user -> user.isActive())
+                .collect(Collectors.toList());
+    }
+
+    private void save() throws IOException {
+        List<String>lines = users.stream()
+                .map(user -> user.toString())
+                .collect(Collectors.toList());
+        Files.write(Paths.get(USER_FILE), lines);
+
     }
 
 

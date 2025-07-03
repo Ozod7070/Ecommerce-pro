@@ -20,7 +20,7 @@ public class CategoryService implements BaseService<Category> {
     @Override
     public void add(Category category) throws Exception {
         if (isCategoryValid(category)) {
-            category.setId(UUID.randomUUID());
+            category.setParentId(UUID.randomUUID());
             category.setActive(true);
             categories.add(category);
             saveCategories();
@@ -40,16 +40,7 @@ public class CategoryService implements BaseService<Category> {
         return false;
     }
 
-    @Override
-    public boolean remove(Category category) throws Exception {
-        boolean removed = categories.stream()
-                .filter(c -> c.getId().equals(category.getId()))
-                .peek(c -> c.setActive(false))
-                .findFirst()
-                .isPresent();
-        if (removed) saveCategories();
-        return removed;
-    }
+
 
     @Override
     public Category get(UUID id) throws Exception {

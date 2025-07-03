@@ -1,5 +1,7 @@
 package uz.pdp.base;
 
+import uz.pdp.modul.Category;
+
 import java.util.UUID;
 
 public interface BaseService<T>{
