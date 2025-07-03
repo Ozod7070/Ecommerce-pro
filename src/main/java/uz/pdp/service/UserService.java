@@ -26,13 +26,13 @@ public class UserService implements BaseService <User> {
 
 
     @Override
-    public boolean remove(UUID id) throws Exception {
+    public void remove(UUID id) throws Exception {
         Optional<User>found = Optional.ofNullable(get(id));
        if(found.isPresent()){
            users.remove(found.get());
-           return true;
+       }else{
+           throw new InvalidUserNameException("User not found " + id);
        }
-       return false;
     }
 
     @Override
@@ -45,6 +45,7 @@ public class UserService implements BaseService <User> {
             exsitingUser.setPassword(user.getPassword());
             exsitingUser.setRole(user.getRole());
             exsitingUser.setActive(user.isActive());
+            return  true;
         }else{
             throw new Exception("User not found " + id);
         }

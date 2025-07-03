@@ -70,13 +70,11 @@ public class ProductService implements BaseService<Product> {
     }
 
     @Override
-    public void remove(Product product) throws Exception {
-        boolean removed = products.removeIf(p -> p.getId().equals(product.getId()));
-        if (removed) {
-            writeProducts();
-        }
-        return removed;
+    public void remove(UUID id) throws Exception {
+        products.stream().filter(product -> product.getId().equals(id))
+                .findFirst().orElseThrow(()->new RuntimeException("Product not found " + id));
     }
+
 
     @Override
     public Product get(UUID id) throws Exception {
