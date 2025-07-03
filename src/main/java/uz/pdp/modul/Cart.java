@@ -1,5 +1,6 @@
 package uz.pdp.modul;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,6 +26,7 @@ public class Cart extends BaseModel {
 
     private UUID userId;
     private List<Item> products;
+    private boolean paid;
 
     public Cart(UUID userId) {
         this.userId = userId;
