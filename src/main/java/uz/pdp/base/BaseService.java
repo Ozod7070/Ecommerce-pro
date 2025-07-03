@@ -7,7 +7,7 @@ public interface BaseService<T>{
 
     void add(T t) throws Exception;
 
-    void update(T t, UUID id) throws Exception;
+    boolean update(T t, UUID id) throws Exception;
 
     boolean remove(T t) throws Exception;
 
