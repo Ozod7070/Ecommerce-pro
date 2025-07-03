@@ -1,13 +1,11 @@
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
+import uz.pdp.enums.UserRole;
 import uz.pdp.exceptions.InvalidUserNameException;
 import uz.pdp.modul.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 public class UserService implements BaseService <User> {
@@ -67,6 +65,28 @@ public class UserService implements BaseService <User> {
                 .filter(user -> user.getUserName().equals(username))
                 .filter(user -> user.getPassword().equals(password))
                 .findFirst();
-        return userOptional.orElseThrow(()->new RuntimeException("Username or password" ));
+        return userOptional.orElseThrow(()->new RuntimeException("Username or password invalid! " ));
     }
+
+    public User getByUsername(String username){
+       return users.stream().filter(user -> user.isActive() && user.getUserName().equals(username))
+                .findFirst().orElseThrow(()->new RuntimeException("User not found! "));
+    }
+
+
+    public User getUsername(UUID userId) throws Exception {
+        return users.stream().filter(user -> user.isActive() && user.getId().equals(userId))
+                .findFirst().orElseThrow(()->new RuntimeException("User not found! "));
+    }
+
+    public List<User>getByRole(UserRole role){
+        return Collections.singletonList(users.stream().filter(user -> user.isActive() && user.getRole().equals(role))
+                .findFirst().orElseThrow(() -> new RuntimeException("User not found! ")));
+    }
+
+    private boolean getUserAvailable(String username){
+          return users.stream().noneMatch(user -> user.isActive() && user.getUserName().equals(username));
+    }
+
+
 }
