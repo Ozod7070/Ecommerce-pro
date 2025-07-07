@@ -1,41 +1,31 @@
 package uz.pdp.modul;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import uz.pdp.base.BaseModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Cart extends BaseModel {
-    public Object isPaid() {
-        return null;
-    }
+    private UUID customerId;
+    private UUID userId;
+    private boolean paid;
+    private List<Item> items = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Item {
+    public static class Item implements Serializable {
         private UUID productId;
         private Integer quantity;
     }
-
-    private UUID userId;
-    private List<Item> products;
-    private boolean paid;
-
-    public Cart(UUID userId) {
-        this.userId = userId;
-        this.products = new ArrayList<>();
-    }
-
-
 }

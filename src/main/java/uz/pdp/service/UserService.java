@@ -1,32 +1,22 @@
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
+import uz.pdp.modul.User;
 
 import java.util.UUID;
 
-public class UserService implements BaseService {
-    public UserService() {
-        super();
-    }
+public class UserService implements BaseService<User> {
+    @Override
+    public void add(User user) {}
 
     @Override
-    public void add(Object o) throws Exception {
-
-    }
+    public boolean update(User user, UUID id) { return false; }
 
     @Override
-    public boolean update(Object o, UUID id) throws Exception {
-
-        return false;
-    }
+    public void remove(UUID id) {}
 
     @Override
-    public boolean remove(Object o) throws Exception {
-        return false;
-    }
-
-    @Override
-    public Object get(UUID id) throws Exception {
-        return null;
+    public User get(UUID id) {
+        return new User();
     }
 }
