@@ -5,53 +5,60 @@ import uz.pdp.modul.Category;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CategoryService implements BaseService<Category> {
-    private static final String FILE_NAME = "src/main/uz.pdp/data/category.txt";
+    private static final String FILE_NAME = "src/main/uz.pdp/data/categories.txt";
     private List<Category> categories;
 
     public CategoryService() {
-        this.categories = load();
+        try {
+            categories = read();
+        } catch (Exception e) {
+            categories = new ArrayList<>();
+        }
     }
 
     @Override
-    public void add(Category category) throws IOException {
+    public void add(Category category) throws Exception {
+        category.setId(UUID.randomUUID());
         category.setActive(true);
         categories.add(category);
         save();
     }
 
     @Override
-    public boolean update(Category category, UUID id) throws IOException {
-        for (Category c : categories) {
-            if (c.getId().equals(id)) {
-                c.setName(category.getName());
-                c.setParentId(category.getParentId());
-                save();
-                return true;
-            }
+    public boolean update(Category category, UUID id) throws Exception {
+        Category found = get(id);
+        if (found != null) {
+            found.setName(category.getName());
+            found.setParentId(category.getParentId());
+            save();
+            return true;
         }
         return false;
     }
 
     @Override
-    public void remove(UUID id) throws IOException {
-        for (Category c : categories) {
-            if (c.getId().equals(id)) {
-                c.setActive(false);
-                save();
-                return;
-            }
+    public boolean remove(UUID id) throws Exception {
+        Category found = get(id);
+        if (found != null) {
+            found.setActive(false);
+            save();
+            return true;
         }
+        return false;
     }
 
     @Override
-    public Category get(UUID id) {
+    public Category get(UUID id) throws Exception {
         return categories.stream()
                 .filter(c -> c.isActive() && c.getId().equals(id))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<Category> getAll() {
+        return categories;
     }
 
     private void save() throws IOException {
@@ -60,17 +67,11 @@ public class CategoryService implements BaseService<Category> {
         }
     }
 
-    private List<Category> load() {
+    private List<Category> read() throws IOException, ClassNotFoundException {
         File file = new File(FILE_NAME);
         if (!file.exists()) return new ArrayList<>();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (List<Category>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            return new ArrayList<>();
         }
-    }
-
-    public List<Category> getAllActive() {
-        return categories.stream().filter(Category::isActive).collect(Collectors.toList());
     }
 }

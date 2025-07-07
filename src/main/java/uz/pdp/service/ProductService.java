@@ -1,4 +1,3 @@
-
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
@@ -9,49 +8,75 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProductService implements BaseService<Product> {
-    private static final String PRODUCT_FILE = "src/main/uz.pdp/data/product.txt";
-    private static List<Product> products = new ArrayList<>();
+    private static final String FILE_NAME = "src/main/uz.pdp/data/products.txt";
+    private List<Product> products;
 
-    @Override
-    public void add(Product product) throws IOException {
-        product.setId(UUID.randomUUID());
-        product.setActive(true);
-        products.add(product);
-        writeProducts();
+    public ProductService() {
+        try {
+            products = read();
+        } catch (Exception e) {
+            products = new ArrayList<>();
+        }
     }
 
     @Override
-    public boolean update(Product product, UUID id) throws IOException {
-        Product p = get(id);
-        if (p != null) {
-            p.setName(product.getName());
-            p.setPrice(product.getPrice());
-            p.setQuantity(product.getQuantity());
-            p.setCategoryId(product.getCategoryId());
-            p.setSellerId(product.getSellerId());
-            writeProducts();
+    public void add(Product product) throws Exception {
+        product.setActive(true);
+        products.add(product);
+        save();
+    }
+
+    @Override
+    public boolean update(Product product, UUID id) throws Exception {
+        Product found = get(id);
+        if (found != null) {
+            found.setName(product.getName());
+            found.setPrice(product.getPrice());
+            found.setQuantity(product.getQuantity());
+            found.setCategoryId(product.getCategoryId());
+            found.setSellerId(product.getSellerId());
+            save();
             return true;
         }
         return false;
     }
 
     @Override
-    public void remove(UUID id) throws IOException {
-        products.removeIf(p -> p.getId().equals(id));
-        writeProducts();
+    public boolean remove(UUID id) throws Exception {
+        Product found = get(id);
+        if (found != null) {
+            found.setActive(false);
+            save();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public Product get(UUID id) {
+    public Product get(UUID id) throws Exception {
         return products.stream()
-                .filter(p -> p.getId().equals(id))
+                .filter(p -> p.isActive() && p.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
 
-    private void writeProducts() throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(PRODUCT_FILE))) {
-            out.writeObject(products);
+    public List<Product> getByCategory(UUID categoryId) {
+        return products.stream()
+                .filter(p -> p.isActive() && p.getCategoryId().equals(categoryId))
+                .collect(Collectors.toList());
+    }
+
+    private void save() throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(products);
+        }
+    }
+
+    private List<Product> read() throws IOException, ClassNotFoundException {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) return new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            return (List<Product>) ois.readObject();
         }
     }
 }

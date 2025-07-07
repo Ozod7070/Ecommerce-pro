@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 public abstract class BaseModel implements Serializable {
-    private final UUID id;
+    private  UUID id;
     @Setter
     private boolean active = true;
 
@@ -19,5 +19,7 @@ public abstract class BaseModel implements Serializable {
         this.id = id;
     }
 
-    public abstract void setId(UUID uuid);
+    public void setId(UUID uuid) {
+        this.id = uuid;
+    }
 }
