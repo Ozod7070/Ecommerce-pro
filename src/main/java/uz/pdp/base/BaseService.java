@@ -9,6 +9,7 @@ public interface BaseService<T>{
 
     boolean update(T t, UUID id) throws Exception;
 
+
     boolean remove(UUID id) throws Exception;
 
     T get(UUID id) throws Exception;
