@@ -1,14 +1,15 @@
 package uz.pdp.base;
 
-import uz.pdp.modul.Cart;
-import uz.pdp.modul.Category;
-
-import java.io.IOException;
 import java.util.UUID;
 
-public interface BaseService<T> {
+public interface BaseService<T>{
+
+
     void add(T t) throws Exception;
+
     boolean update(T t, UUID id) throws Exception;
-    void remove(UUID id) throws Exception;
+
+    boolean remove(T t) throws Exception;
+
     T get(UUID id) throws Exception;
 }
