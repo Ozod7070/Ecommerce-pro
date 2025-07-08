@@ -4,7 +4,7 @@ import uz.pdp.base.BaseService;
 
 import java.util.UUID;
 
-public class UserService implements BaseService {
+public class  UserService implements BaseService {
     public UserService() {
         super();
     }
